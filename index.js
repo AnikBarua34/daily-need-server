@@ -13,7 +13,7 @@ app.use(express.json());
 
 // connecting to mongoDB 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6xsao.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-console.log(uri)
+
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -26,6 +26,7 @@ async function run(){
         const addNewProductsCollection = database.collection("added-new_products");
         const reviewCollection = database.collection("User_Review");
         const usersCollection =database.collection("Users");
+        const blogCollection =database.collection("Blogs");
         
         // GET ADDED NEW PRODUCTS ,5
             app.get('/getAddNewProduct', async (req,res)=>{
@@ -107,6 +108,7 @@ async function run(){
             const email=req.params.email;
             const query={email:email};
             const user= await usersCollection.findOne(query)
+            console.log(user);
             let isAdmin=false;
             if(user?.role ==='Admin'){
                 isAdmin=true;
@@ -130,7 +132,7 @@ async function run(){
             console.log('Deleting with id',id)
             res.send(result);
         })
-        // ORDER STATUS UPDATE 
+        // ORDER STATUS UPDATE 14
         app.put("/statusUpdate/:id", async (req, res) => {
             const filter = { _id: ObjectId(req.params.id) };
             console.log(req.params.id);
@@ -142,6 +144,20 @@ async function run(){
             res.send(result);
             console.log(result);
           });
+
+        //   Blog Post 15
+        app.post('/postBlogs', async (req,res)=>{
+            const newBlog = req.body;
+            const result =await blogCollection.insertOne(newBlog);
+            
+            res.json(result)
+        })
+        // GET Blogs ,16 
+        app.get('/getBlogs', async (req,res)=>{
+            const cursor = blogCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        })
         
 
     }
@@ -154,7 +170,7 @@ async function run(){
 run().catch(console.dir);
 
 app.get('/',async (req,res)=>{
-    res.send('Welcome to crazy bikers server')
+    res.send('Welcome to daily need server')
 });
 
 app.listen(port, ()=>{
