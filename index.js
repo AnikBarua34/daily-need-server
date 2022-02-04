@@ -158,7 +158,31 @@ async function run(){
             const result = await cursor.toArray();
             res.send(result);
         })
-        
+
+        // Edit Items get items by id 17
+        app.get('/getAddNewProduct/:id', async(req,res)=>{
+            const id= req.params.id;
+            const query = {_id: ObjectId(id) };
+            const editItem = await addNewProductsCollection.findOne(query)
+            res.send(editItem)
+        })
+        // Update Items  18
+        app.put('/getAddNewProduct/:id', async (req,res)=>{
+            const id =req.params.id;
+            const updateItem = req.body;
+            const filter= {_id: ObjectId(id)};
+            const options = {upsert: true}; 
+            const updateDoc={
+                $set:{
+                    name:updateItem.name,
+                    description:updateItem.description,
+                    img:updateItem.img,
+                    price:updateItem.price
+                },
+            };
+            const result = await addNewProductsCollection.updateOne(filter, updateDoc,options)
+            res.send(result);
+        })
 
     }
 
